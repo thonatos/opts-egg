@@ -1,0 +1,31 @@
+type Docker {
+  images(id: Int, limit: Int, offset: Int): [Image] 
+  clusters(name: String): [Cluster]
+}
+
+type Image {
+  id: Int!  
+  namespace: String!
+  region: String!
+  name: String!
+  repo_full_name: String!  
+  tags: [Tag]
+}
+
+type Tag {
+  id: Int!
+  digest: String!
+  tag: String!
+  pushed_at: Date!  
+}
+
+type Cluster {
+  id: Int!
+  name: String!
+  region: String!  
+  created_at: Date!
+  # masterUrl: String!
+  # ca: String!
+  # key: String!
+  # cert: String!
+}

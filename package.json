@@ -1,0 +1,62 @@
+{
+  "name": "opts-egg",
+  "version": "1.0.0",
+  "description": "devops based on docker",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.17.1",
+    "egg": "^2.0.0",
+    "egg-cors": "^2.0.0",
+    "egg-graphql": "^2.0.0",
+    "egg-jwt": "^2.2.0",
+    "egg-scripts": "^2.2.0",
+    "egg-sequelize": "^3.1.0",
+    "egg-socket.io": "^4.0.5",
+    "graphql": "^0.11.7",
+    "mysql2": "^1.5.1"
+  },
+  "devDependencies": {
+    "autod": "^3.0.1",
+    "autod-egg": "^1.0.0",
+    "egg-bin": "^4.3.5",
+    "egg-ci": "^1.8.0",
+    "egg-mock": "^3.13.1",
+    "esdoc": "^1.0.4",
+    "esdoc-ecmascript-proposal-plugin": "^1.0.0",
+    "esdoc-node": "^1.0.2",
+    "esdoc-standard-plugin": "^1.0.0",
+    "eslint": "^4.11.0",
+    "eslint-config-egg": "^5.1.1",
+    "socket.io-client": "^2.0.4",
+    "webstorm-disable-index": "^1.2.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "start": "egg-scripts start --sticky",
+    "startd": "egg-scripts start --daemon",
+    "stop": "egg-scripts stop",
+    "dev": "egg-bin dev --sticky",
+    "debug": "egg-bin debug",
+    "docs": "esdoc",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "npm run lint && npm run cov",
+    "autod": "autod",
+    "migrate:new": "egg-sequelize migration:create",
+    "migrate:up": "egg-sequelize db:migrate",
+    "migrate:down": "egg-sequelize db:migrate:undo"
+  },
+  "ci": {
+    "version": "6, 8"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Suyi",
+  "license": "MIT"
+}

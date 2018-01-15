@@ -1,0 +1,24 @@
+{
+  "source": "./app",
+  "destination": "./app/public/docs",
+  "excludes": [    
+    "app\/public\/docs\/.+"
+  ],
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "brand": {        
+        "title": "Console"
+      }
+    },
+    {
+      "name": "esdoc-node"
+    },
+    {
+      "name": "esdoc-ecmascript-proposal-plugin",
+      "option": {
+        "all": true
+      }
+    }
+  ]
+}
