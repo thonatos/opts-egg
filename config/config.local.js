@@ -14,7 +14,7 @@ exports.io = {
     wsEngine: 'uws',
   }, // passed to engine.io
   namespace: {
-    '/webrtc': {
+    '/docker': {
       connectionMiddleware: [ 'docker' ],
       packetMiddleware: [],
     },
