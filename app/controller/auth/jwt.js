@@ -18,6 +18,7 @@ class JwtController extends Controller {
     const { id, userrole } = user;
     const payload = {
       id,
+      username,
       userrole,
     };
     const options = {
@@ -31,6 +32,10 @@ class JwtController extends Controller {
 
     ctx.body = {
       token,
+      info: {
+        username,
+        userrole,
+      },
     };
   }
 }

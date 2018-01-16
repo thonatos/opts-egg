@@ -5,7 +5,7 @@ const Service = require('egg').Service;
 class MemberService extends Service {
   async find(username, password) {
     const { ctx } = this;
-    const member = await ctx.model.Mermber.findOne({
+    const member = await ctx.model.Member.findOne({
       where: {
         username,
         password,
