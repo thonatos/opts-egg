@@ -10,11 +10,12 @@ module.exports = appInfo => {
 
   config.cors = {
     allowMethods: 'GET,HEAD,OPTIONS,PUT,POST,DELETE,PATCH',
+    credentials: true,
   };
 
   config.security = {
     domainWhiteList: [
-      '.localhost',
+      'http://localhost:3000', // dev
     ],
     csrf: {
       enable: false,
