@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = app => {
-  app.beforeStart(function* () {
-    yield app.model.sync({
+  app.beforeStart(async () => {
+    await app.model.sync({
       force: false,
     });
   });
