@@ -3,6 +3,26 @@
 const Service = require('egg').Service;
 
 class DeployService extends Service {
+  async list(limit, offset) {
+    const { ctx } = this;
+    const deploys = await ctx.model.Deploy.findAndCountAll({
+      limit: limit && (limit > 100 ? 100 : limit) || 10,
+      offset: offset || 0,
+      attributes: [ 'id', 'app', 'template', 'cluster_id' ],
+      include: [
+        {
+          model: this.ctx.model.DeployEnv,
+          as: 'env',
+        },
+        {
+          model: this.ctx.model.DeployImage,
+          as: 'image',
+        },
+      ],
+    });
+    return deploys;
+  }
+
   async show(id) {
     const deploy = await this.ctx.model.Deploy.findOne({
       where: {

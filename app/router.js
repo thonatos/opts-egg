@@ -5,6 +5,7 @@ module.exports = ({ router, controller, io }) => {
 
   // api
   router.resources('docker/clusters', '/api/docker/clusters', controller.api.docker.clusters);
+  router.resources('docker/deploys', '/api/docker/deploys', controller.api.docker.deploys);
   router.resources('docker/images', '/api/docker/images', controller.api.docker.images);
 
   // webhook
