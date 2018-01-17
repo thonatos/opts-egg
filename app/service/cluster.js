@@ -5,6 +5,16 @@ const https = require('https');
 const Service = require('egg').Service;
 
 class ClusterService extends Service {
+  async list(limit, offset) {
+    const { ctx } = this;
+    const clusters = await ctx.model.Cluster.findAndCountAll({
+      limit: limit && (limit > 100 ? 100 : limit) || 10,
+      offset: offset || 0,
+      attributes: [ 'id', 'name', 'region', 'created_at' ],
+    });
+    return clusters;
+  }
+
   async find(id) {
     const cluster = await this.ctx.model.Cluster.findOne({
       where: {

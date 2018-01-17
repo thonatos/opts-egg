@@ -5,9 +5,8 @@ const Controller = require('egg').Controller;
 class ClustersController extends Controller {
   // gets
   async index() {
-    const clusters = await this.ctx.model.Cluster.findAll({
-      attributes: [ 'id', 'name', 'region', 'created_at' ],
-    });
+    const { limit, offset } = this.ctx.query;
+    const clusters = await this.ctx.service.cluster.list(parseInt(limit), parseInt(offset));
     this.ctx.body = clusters;
   }
 
