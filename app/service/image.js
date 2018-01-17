@@ -4,7 +4,8 @@ const Service = require('egg').Service;
 
 class ImageService extends Service {
   async list(limit, offset) {
-    const images = await this.ctx.model.Image.findAll({
+    const { ctx } = this;
+    const images = await ctx.model.Image.findAndCountAll({
       limit: limit && (limit > 100 ? 100 : limit) || 10,
       offset: offset || 0,
       include: [
