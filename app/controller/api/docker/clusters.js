@@ -3,23 +3,53 @@
 const Controller = require('egg').Controller;
 
 class ClustersController extends Controller {
-  // gets
   async index() {
-    const { limit, offset } = this.ctx.query;
-    const clusters = await this.ctx.service.cluster.list(parseInt(limit), parseInt(offset));
-    this.ctx.body = clusters;
+    const { ctx } = this;
+    const { limit, offset } = ctx.query;
+    const clusters = await ctx.model.Cluster.paginate({}, {
+      select: '-ca -key -cert -host',
+      skip: parseInt(offset),
+      limit: parseInt(limit) || 10,
+    });
+    ctx.body = ctx.helper.formatMongoosePaginateData(clusters);
   }
 
-  // get
   async show() {
-    const { id } = this.ctx.params;
-    const cluster = await this.ctx.service.cluster.find(id);
-    this.ctx.body = cluster;
+    const { ctx } = this;
+    const { id: _id } = ctx.params;
+    const cluster = await ctx.model.Cluster.findOne({
+      _id,
+    });
+    const data = await ctx.service.cluster.getProject(cluster);
+    ctx.body = data;
   }
 
-  // async create() { }
-  // async destroy() { }
-  // async update() { }
+  async create() {
+    const { ctx } = this;
+    const body = ctx.request.body;
+    const cluster = new ctx.model.Cluster(body);
+    await cluster.save();
+    ctx.body = cluster;
+  }
+
+  async update() {
+    const { ctx } = this;
+    const { id: _id } = ctx.params;
+    const body = ctx.request.body;
+    const cluster = await ctx.model.Cluster.update({
+      _id,
+    }, body);
+    ctx.body = cluster;
+  }
+
+  async destroy() {
+    const { ctx } = this;
+    const { id: _id } = ctx.params;
+    const cluster = await ctx.model.Cluster.remove({
+      _id,
+    });
+    ctx.body = cluster;
+  }
 }
 
 module.exports = ClustersController;

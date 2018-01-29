@@ -5,9 +5,40 @@ const Controller = require('egg').Controller;
 class DeploysController extends Controller {
   // gets
   async index() {
-    const { limit, offset } = this.ctx.query;
-    const deploys = await this.ctx.service.deploy.list(parseInt(limit), parseInt(offset));
-    this.ctx.body = deploys;
+    const { ctx } = this;
+    const { limit, offset } = ctx.query;
+    const deploys = await ctx.model.Deploy.paginate({}, {
+      skip: parseInt(offset),
+      limit: parseInt(limit) || 10,
+    });
+    ctx.body = ctx.helper.formatMongoosePaginateData(deploys);
+  }
+
+  async create() {
+    const { ctx } = this;
+    const body = ctx.request.body;
+    const cluster = new ctx.model.Deploy(body);
+    await cluster.save();
+    ctx.body = cluster;
+  }
+
+  async update() {
+    const { ctx } = this;
+    const { id } = ctx.params;
+    const body = ctx.request.body;
+    const cluster = await ctx.model.Deploy.update({
+      _id: id,
+    }, body);
+    ctx.body = cluster;
+  }
+
+  async destroy() {
+    const { ctx } = this;
+    const { id } = ctx.params;
+    const cluster = await ctx.model.Deploy.remove({
+      _id: id,
+    });
+    ctx.body = cluster;
   }
 }
 

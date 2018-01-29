@@ -16,5 +16,5 @@ module.exports = ({ router, controller, io }) => {
   router.post('/auth/jwt/sign', controller.auth.jwt.sign);
 
   // socket.io
-  io.of('/docker').route('exchange', io.controller.docker.exchange);
+  // io.of('/docker').route('exchange', io.controller.docker.exchange);
 };
