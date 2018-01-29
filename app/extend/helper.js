@@ -24,7 +24,10 @@ module.exports = {
         return null;
       }
 
-      const [ namespace, name ] = repository.split('/');
+      const [
+        namespace,
+        name,
+      ] = repository.split('/');
       return {
         push_data: {
           tag,
@@ -39,5 +42,22 @@ module.exports = {
         },
       };
     });
+  },
+
+  formatMongoosePaginateData(data) {
+    const { total, limit, docs } = data;
+    const meta = {
+      total,
+      limit,
+    };
+
+    data.page && (meta.page = data.page);
+    data.pages && (meta.pages = data.pages);
+    data.offset && (meta.offset = data.offset);
+
+    return {
+      meta,
+      data: docs,
+    };
   },
 };
