@@ -8,7 +8,11 @@ class JwtController extends Controller {
     const { username, password } = ctx.request.body;
 
     // find user
-    const user = await ctx.service.member.find(username, password);
+    const user = await ctx.model.Member.findOne({
+      username,
+      password,
+    });
+
     if (!user) {
       ctx.throw(403, 'auth faild');
       return;
@@ -21,6 +25,7 @@ class JwtController extends Controller {
       username,
       userrole,
     };
+
     const options = {
       expiresIn: '2h',
     };
