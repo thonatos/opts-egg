@@ -1,11 +1,17 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING } = app.Sequelize;
-  const Member = app.model.define('member', {
-    username: STRING(32),
-    password: STRING(256),
-    userrole: STRING(64),
+  const mongoose = app.mongoose;
+  const Schema = new mongoose.Schema({
+    username: String,
+    password: String,
+    userrole: String,
+  }, {
+    timestamps: {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
   });
-  return Member;
+
+  return mongoose.model('Member', Schema);
 };

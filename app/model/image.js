@@ -1,15 +1,20 @@
 'use strict';
+const mongoosePaginate = require('mongoose-paginate');
 
 module.exports = app => {
-  const { STRING } = app.Sequelize;
-  const Image = app.model.define('image', {
-    namespace: STRING(512),
-    region: STRING,
-    name: STRING,
-    repo_full_name: STRING(1024),
+  const mongoose = app.mongoose;
+  const Schema = new mongoose.Schema({
+    name: String,
+    namespace: String,
+    region: String,
+    repo_full_name: String,
+  }, {
+    timestamps: {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
   });
-  Image.associate = function() {
-    app.model.Image.hasMany(app.model.ImageTag, { as: 'tags', foreignKey: 'image_id' });
-  };
-  return Image;
+
+  Schema.plugin(mongoosePaginate);
+  return mongoose.model('Image', Schema);
 };

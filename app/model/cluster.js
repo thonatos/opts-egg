@@ -1,14 +1,22 @@
 'use strict';
+const mongoosePaginate = require('mongoose-paginate');
 
 module.exports = app => {
-  const { STRING, TEXT } = app.Sequelize;
-  const Cluster = app.model.define('cluster', {
-    name: STRING,
-    region: STRING,
-    masterUrl: STRING(1024),
-    ca: TEXT,
-    key: TEXT,
-    cert: TEXT,
+  const mongoose = app.mongoose;
+  const Schema = new mongoose.Schema({
+    name: String,
+    region: String,
+    host: String,
+    ca: String,
+    key: String,
+    cert: String,
+  }, {
+    timestamps: {
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
   });
-  return Cluster;
+
+  Schema.plugin(mongoosePaginate);
+  return mongoose.model('Cluster', Schema);
 };
