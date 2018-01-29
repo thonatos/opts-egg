@@ -6,7 +6,7 @@ class AliyunController extends Controller {
   async create() {
     const { ctx } = this;
     const { deployId } = ctx.query;
-    const { callbackUrl } = ctx.hook;
+    const { callbackUrl } = ctx.hook || {};
     const body = ctx.request.body;
 
     // 记录镜像
