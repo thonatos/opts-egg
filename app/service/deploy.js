@@ -3,76 +3,46 @@
 const Service = require('egg').Service;
 
 class DeployService extends Service {
-  async list(limit, offset) {
+  async update(deployId) {
     const { ctx } = this;
-    const deploys = await ctx.model.Deploy.findAndCountAll({
-      limit: limit && (limit > 100 ? 100 : limit) || 10,
-      offset: offset || 0,
-      attributes: [ 'id', 'app', 'template', 'cluster_id' ],
-      include: [
-        {
-          model: this.ctx.model.DeployEnv,
-          as: 'env',
-        },
-        {
-          model: this.ctx.model.DeployImage,
-          as: 'image',
-        },
-      ],
-    });
-    return deploys;
-  }
 
-  async show(id) {
-    const deploy = await this.ctx.model.Deploy.findOne({
-      where: {
-        id,
-      },
-      include: [
-        {
-          model: this.ctx.model.DeployEnv,
-          as: 'env',
-        },
-        {
-          model: this.ctx.model.DeployImage,
-          as: 'image',
-        },
-      ],
+    const deploy = await ctx.model.Deploy.find({
+      _id: deployId,
     });
-    return deploy;
-  }
-
-  async update(id) {
-    const deploy = await this.ctx.service.deploy.show(id);
 
     if (!deploy) {
       this.ctx.throw(500, 'not exist');
     }
 
-    const { image: images, template, app: appName, cluster_id } = deploy;
+    const { images, template, app: appName, cluster: cluster_id, envs } = deploy;
 
     // environment
     const environment = {};
     for (const index in images) {
-      const { key, image_id } = images[ index ];
-      const repo_full_name = await this.ctx.service.image.getRepoFullName({
-        id: image_id,
+      const { key, image_id } = images[index];
+
+      const image = await ctx.module.Image.findOne({
+        _id: image_id,
       });
-      if (repo_full_name) {
-        environment[ key ] = repo_full_name;
+
+      const image_tag = await ctx.model.ImageTag.findOne({
+        _id: image_id,
+      });
+
+      if (image && image_tag) {
+        environment[key] = image.repo_full_name + ':' + image_tag.tag;
       }
     }
 
-    const env = deploy.env;
-    for (const index in env) {
-      const { key, value } = env[ index ];
+    for (const index in envs) {
+      const { key, value } = envs[index];
       if (key) {
-        environment[ key ] = value;
+        environment[key] = value;
       }
     }
 
     // update
-    const result = await this.ctx.service.cluster.update(cluster_id, appName, {
+    const result = await this.ctx.service.cluster.updateApp(cluster_id, appName, {
       environment,
       template,
       version: Date.now().toString(),

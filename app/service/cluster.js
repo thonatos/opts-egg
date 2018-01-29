@@ -5,69 +5,46 @@ const https = require('https');
 const Service = require('egg').Service;
 
 class ClusterService extends Service {
-  async list(limit, offset) {
+
+  async getProject(cluster) {
     const { ctx } = this;
-    const clusters = await ctx.model.Cluster.findAndCountAll({
-      limit: limit && (limit > 100 ? 100 : limit) || 10,
-      offset: offset || 0,
-      attributes: [ 'id', 'name', 'region', 'created_at' ],
-    });
-    return clusters;
-  }
-
-  async find(id) {
-    const cluster = await this.ctx.model.Cluster.findOne({
-      where: {
-        id,
-      },
-    });
-
-    if (!cluster) {
-      this.ctx.throw(501, '#cluster: not exist');
-    }
-
     try {
-      const { ca, key, cert, masterUrl } = cluster;
+      const { ca, key, cert, host } = cluster;
       const agent = new https.Agent({
         ca,
         key,
         cert,
       });
-      const { data } = await axios.get(`${masterUrl}/projects/`, {
+      const { data } = await axios.get(`${host}/projects/`, {
         httpsAgent: agent,
       });
       return data;
     } catch (error) {
-      this.ctx.throw(500, '#cluster: request info failed');
+      ctx.throw(500, '#cluster: request info failed');
     }
   }
 
   // https://help.aliyun.com/document_detail/26072.html?spm=5176.product25972.6.890.70qDnV
-  async update(id, name, params) {
-    const cluster = await this.ctx.model.Cluster.findOne({
-      where: {
-        id,
-      },
+  async updateApp(clusterId, name, params) {
+    const { ctx } = this;
+    const cluster = await ctx.model.cluster.findOne({
+      _id: clusterId,
     });
 
-    if (!cluster) {
-      this.ctx.throw(501, '#cluster: not exist');
-    }
-
     try {
-      const { ca, key, cert, masterUrl } = cluster;
+      const { ca, key, cert, host } = cluster;
       const agent = new https.Agent({
         ca,
         key,
         cert,
       });
-      const { status } = await axios.post(`${masterUrl}/projects/${name}/update`, params, {
+      const { status } = await axios.post(`${host}/projects/${name}/update`, params, {
         httpsAgent: agent,
       });
       return status;
     } catch (error) {
       console.log(error.response);
-      this.ctx.throw(500, '#cluster: update failed');
+      ctx.throw(500, '#cluster: update failed');
     }
   }
 
