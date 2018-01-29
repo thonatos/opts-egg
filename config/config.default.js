@@ -32,7 +32,7 @@ module.exports = appInfo => {
   config.middleware = [ 'graphql', 'dockerHookAuth' ];
 
   config.dockerHookAuth = {
-    enable: true,
+    enable: false,
     match: '/hook/docker',
   };
 

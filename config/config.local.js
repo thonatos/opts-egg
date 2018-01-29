@@ -1,18 +1,14 @@
 'use strict';
 
-exports.sequelize = {
-  dialect: 'mysql',
-  database: 'devops',
-  host: 'localhost',
-  port: '3306',
-  username: 'root',
-  password: 'mysql',
+exports.mongoose = {
+  url: 'mongodb://localhost/devops',
+  options: {},
 };
 
 exports.io = {
   init: {
     wsEngine: 'uws',
-  }, // passed to engine.io
+  },
   namespace: {
     '/docker': {
       connectionMiddleware: [ 'docker' ],

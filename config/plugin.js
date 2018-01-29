@@ -3,9 +3,9 @@
 // had enabled by egg
 // exports.static = true;
 
-exports.sequelize = {
+exports.mongoose = {
   enable: true,
-  package: 'egg-sequelize',
+  package: 'egg-mongoose',
 };
 
 exports.graphql = {
@@ -14,7 +14,7 @@ exports.graphql = {
 };
 
 exports.io = {
-  enable: true,
+  enable: false,
   package: 'egg-socket.io',
 };
 
