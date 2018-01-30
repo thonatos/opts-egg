@@ -18,6 +18,7 @@ module.exports = app => {
     if (existed) return;
 
     const newAdmin = new app.model.Member(administrator);
+    newAdmin.setPassword(administrator.password);
     await newAdmin.save();
 
     app.logger.info(`\n

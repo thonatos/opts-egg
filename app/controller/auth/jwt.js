@@ -10,10 +10,14 @@ class JwtController extends Controller {
     // find user
     const user = await ctx.model.Member.findOne({
       username,
-      password,
     });
 
     if (!user) {
+      ctx.throw(403, 'auth faild');
+      return;
+    }
+
+    if (!user.validPassword(password)) {
       ctx.throw(403, 'auth faild');
       return;
     }
