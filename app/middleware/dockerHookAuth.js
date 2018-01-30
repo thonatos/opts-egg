@@ -3,9 +3,8 @@
 module.exports = () => {
   return async function(ctx, next) {
     const accessToken = ctx.get('X-AccessToken') || ctx.query.accessToken || null;
-    const hook = await ctx.model.Hook.findOne({
-      accessToken,
-    });
+    const notifications = ctx.app.config.notifications;
+    const hook = notifications[accessToken] || null;
     if (!hook) {
       ctx.throw(403, '#hook: auth failed');
       return;
