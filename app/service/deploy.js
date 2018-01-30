@@ -14,7 +14,13 @@ class DeployService extends Service {
       this.ctx.throw(500, 'not exist');
     }
 
-    const { template, app: appName, cluster: clusterId, envs, images } = deploy;
+    const { template, app: appName, cluster: clusterId, envs, images, enabled } = deploy;
+
+    if (!enabled) {
+      return {
+        message: 'deploy has been disabled.',
+      };
+    }
 
     console.log(clusterId, envs, images);
 
