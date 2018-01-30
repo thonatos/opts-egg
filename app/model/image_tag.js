@@ -7,7 +7,7 @@ module.exports = app => {
     image: String,
     digest: String,
     tag: String,
-    push_at: Date,
+    pushed_at: Date,
   }, {
     collection: 'images_tags',
     timestamps: {
