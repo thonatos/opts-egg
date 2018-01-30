@@ -14,35 +14,27 @@ class DeployService extends Service {
       this.ctx.throw(500, 'not exist');
     }
 
-    const { images, template, app: appName, cluster: cluster_id, envs } = deploy;
+    const { template, app: appName, cluster: clusterId, envs, images } = deploy;
 
     // environment
     const environment = {};
-    for (const index in images) {
-      const { key, image_id } = images[index];
 
-      const image = await ctx.module.Image.findOne({
-        _id: image_id,
-      });
+    // images
+    images.forEach(async ({ key, image_id: _id }) => {
+      const image = await ctx.module.Image.findOne({ _id });
+      const imageTag = await ctx.model.ImageTag.findOne({ _id });
+      if (!image || !imageTag) return;
+      environment[key] = image.repo_full_name + ':' + imageTag.tag;
+    });
 
-      const image_tag = await ctx.model.ImageTag.findOne({
-        _id: image_id,
-      });
-
-      if (image && image_tag) {
-        environment[key] = image.repo_full_name + ':' + image_tag.tag;
-      }
-    }
-
-    for (const index in envs) {
-      const { key, value } = envs[index];
-      if (key) {
-        environment[key] = value;
-      }
-    }
+    // envs
+    envs.forEach(({ key, value }) => {
+      if (!key) return;
+      environment[key] = value;
+    });
 
     // update
-    const result = await this.ctx.service.cluster.updateApp(cluster_id, appName, {
+    const result = await this.ctx.service.cluster.updateApp(clusterId, appName, {
       environment,
       template,
       version: Date.now().toString(),
