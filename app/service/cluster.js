@@ -27,7 +27,7 @@ class ClusterService extends Service {
   // https://help.aliyun.com/document_detail/26072.html?spm=5176.product25972.6.890.70qDnV
   async updateApp(clusterId, name, params) {
     const { ctx } = this;
-    const cluster = await ctx.model.cluster.findOne({
+    const cluster = await ctx.model.Cluster.findOne({
       _id: clusterId,
     });
 

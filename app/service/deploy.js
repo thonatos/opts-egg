@@ -6,7 +6,7 @@ class DeployService extends Service {
   async update(deployId) {
     const { ctx } = this;
 
-    const deploy = await ctx.model.Deploy.find({
+    const deploy = await ctx.model.Deploy.findOne({
       _id: deployId,
     });
 
@@ -16,12 +16,14 @@ class DeployService extends Service {
 
     const { template, app: appName, cluster: clusterId, envs, images } = deploy;
 
+    console.log(clusterId, envs, images);
+
     // environment
     const environment = {};
 
     // images
     images.forEach(async ({ key, image_id: _id }) => {
-      const image = await ctx.module.Image.findOne({ _id });
+      const image = await ctx.model.Image.findOne({ _id });
       const imageTag = await ctx.model.ImageTag.findOne({ _id });
       if (!image || !imageTag) return;
       environment[key] = image.repo_full_name + ':' + imageTag.tag;
