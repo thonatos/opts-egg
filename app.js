@@ -13,18 +13,26 @@ module.exports = app => {
       return;
     }
 
-    const existed = await app.model.Member.findOne(administrator);
+    const { username, userrole, password } = administrator;
+
+    const existed = await app.model.Member.findOne({
+      username,
+      userrole,
+    });
 
     if (existed) return;
 
-    const newAdmin = new app.model.Member(administrator);
-    newAdmin.setPassword(administrator.password);
+    const newAdmin = new app.model.Member({
+      username,
+      userrole,
+    });
+    newAdmin.setPassword(password);
     await newAdmin.save();
 
     app.logger.info(`\n
     #INFO: 
 
-      Administrator(${administrator.username}) has been added to database .
+      Administrator(${username}) has been added to database .
     \n`);
   };
 
