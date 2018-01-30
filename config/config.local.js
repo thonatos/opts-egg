@@ -11,7 +11,9 @@ exports.io = {
   },
   namespace: {
     '/docker': {
-      connectionMiddleware: [ 'docker' ],
+      connectionMiddleware: [
+        'docker',
+      ],
       packetMiddleware: [],
     },
   },
@@ -31,4 +33,11 @@ exports.administrator = {
   username: 'suyi',
   password: '123456',
   userrole: 'admin',
+};
+
+exports.notifications = {
+  dingtalk: {
+    type: 'dingtalk',
+    callbackUrl: 'https://oapi.dingtalk.com/robot/send?access_token=xxxxx',
+  },
 };
