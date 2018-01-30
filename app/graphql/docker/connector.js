@@ -6,25 +6,19 @@ class DockerConnector {
   }
 
   async getImages(id, limit, offset) {
-    return await this.ctx.model.Image.findAll({
-      limit: limit && (limit > 100 ? 100 : limit) || 10,
-      offset: offset || 0,
-      where: !id ? {} : { id },
-      include: [
-        {
-          model: this.ctx.model.ImageTag,
-          as: 'tags',
-        },
-      ],
+    const { ctx } = this;
+    const images = await ctx.model.Image.paginate({}, {
+      skip: parseInt(offset),
+      limit: parseInt(limit) || 10,
     });
+    return ctx.helper.formatMongoosePaginateData(images);
   }
 
   async getClusters(name) {
-    return await this.ctx.model.Cluster.findAll({
-      where: !name ? {} : {
-        name,
-      },
-    });
+    const query = !name ? {} : {
+      name,
+    };
+    return await this.ctx.model.Cluster.find(query);
   }
 }
 
