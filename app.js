@@ -1,20 +1,33 @@
 'use strict';
 
 module.exports = app => {
-  app.beforeStart(async () => {
-    const defaultAdmin = {
-      username: 'suyi',
-      password: '123456',
-      userrole: 'admin',
-    };
+  const initAdministrator = async () => {
+    const administrator = app.config.administrator || false;
+    if (!administrator) {
+      app.logger.info(`\n
+      #WARNING: 
 
-    const existAdmin = await app.model.Member.findOne(defaultAdmin);
-    app.logger.info('#existAdmin:\n', existAdmin);
+        Please add default administrator to config.{env}.js
+        Or add it to collection.member .
+      \n`);
+      return;
+    }
 
-    if (existAdmin) return;
+    const existed = await app.model.Member.findOne(administrator);
 
-    const newAdmin = new app.model.Member(defaultAdmin);
+    if (existed) return;
+
+    const newAdmin = new app.model.Member(administrator);
     await newAdmin.save();
-    app.logger.info('#newAdmin:\n', newAdmin);
+
+    app.logger.info(`\n
+    #INFO: 
+
+      Administrator(${administrator.username}) has been added to database .
+    \n`);
+  };
+
+  app.beforeStart(async () => {
+    await initAdministrator();
   });
 };

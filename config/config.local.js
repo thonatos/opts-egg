@@ -26,3 +26,9 @@ exports.jwt = {
   enable: true,
   match: '/api',
 };
+
+exports.administrator = {
+  username: 'suyi',
+  password: '123456',
+  userrole: 'admin',
+};
