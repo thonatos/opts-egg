@@ -10,25 +10,18 @@ class HarborController extends Controller {
     const events = ctx.helper.formatDockerRegistyEvents(body);
 
     for (const index in events) {
-      const event = events[ index ];
+      const event = events[index];
       if (!event) {
         continue;
       }
 
       try {
         // 记录镜像
-        const { image, tag } = await ctx.service.image.create(event);
+        const data = await ctx.service.image.create(event);
 
         // 发送通知
-        await ctx.service.notify.sendToDingtalkRobot(callbackUrl, {
-          msgtype: 'markdown',
-          markdown: {
-            title: '#Image Pushed',
-            text: `${image.get('name')} \n\n` +
-              `> 区域：${image.get('region')} \n\n` +
-              `> 版本：${tag.get('tag')} \n\n` +
-              `> 时间：${tag.get('pushed_at')} \n\n`,
-          },
+        await ctx.service.notify.send(callbackUrl, data, {
+          type: 'dingtalk',
         });
 
       } catch (error) {

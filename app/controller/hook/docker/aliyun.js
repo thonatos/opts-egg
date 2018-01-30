@@ -10,7 +10,7 @@ class AliyunController extends Controller {
     const body = ctx.request.body;
 
     // 记录镜像
-    const { image, tag } = await this.ctx.service.image.create(body);
+    const data = await this.ctx.service.image.create(body);
 
     // 更新应用
     if (deployId) {
@@ -18,15 +18,8 @@ class AliyunController extends Controller {
     }
 
     // 发送通知
-    await ctx.service.notify.sendToDingtalkRobot(callbackUrl, {
-      msgtype: 'markdown',
-      markdown: {
-        title: '#Image Pushed',
-        text: `${image.get('name')} \n\n` +
-          `> 区域：${image.get('region')} \n\n` +
-          `> 版本：${tag.get('tag')} \n\n` +
-          `> 时间：${tag.get('pushed_at')} \n\n`,
-      },
+    await ctx.service.notify.send(callbackUrl, data, {
+      type: 'dingtalk',
     });
 
     ctx.status = 204;
