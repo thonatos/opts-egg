@@ -16,6 +16,7 @@ module.exports = app => {
       image_id: String,
     }],
     enabled: Boolean,
+    trigger: String, // ImageID
   }, {
     timestamps: {
       createdAt: 'created_at',
