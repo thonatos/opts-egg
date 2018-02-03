@@ -3,11 +3,11 @@
 const Service = require('egg').Service;
 
 class DeployService extends Service {
-  async update(deployId) {
+  async update(triggerId = '') {
     const { ctx } = this;
 
     const deploy = await ctx.model.Deploy.findOne({
-      _id: deployId,
+      trigger: triggerId,
     });
 
     if (!deploy) {
