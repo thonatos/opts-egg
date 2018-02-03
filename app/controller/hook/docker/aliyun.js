@@ -11,6 +11,10 @@ class AliyunController extends Controller {
     // 记录镜像
     const data = await this.ctx.service.image.create(body);
 
+    // 部署应用
+    const { image } = data;
+    await ctx.service.deploy.update(image._id);
+
     // 发送通知
     await ctx.service.notify.send(callbackUrl, data, {
       type: 'dingtalk',
