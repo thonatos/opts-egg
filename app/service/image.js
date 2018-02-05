@@ -7,11 +7,16 @@ class ImageService extends Service {
     const { ctx } = this;
     const { push_data, repository } = body;
     const { pushed_at } = push_data;
-    let image = await ctx.model.Image.findOne(repository);
+    const { name, namespace, region } = repository;
+    let image = await ctx.model.Image.findOne({
+      name,
+      namespace,
+      region,
+    });
     if (!image) {
       image = new ctx.model.Image(repository);
+      await image.save();
     }
-    await image.save();
 
     const tag = new ctx.model.ImageTag(Object.assign(push_data, {
       image: image._id,

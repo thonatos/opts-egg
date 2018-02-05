@@ -22,24 +22,25 @@ class DeployService extends Service {
       };
     }
 
-    console.log(clusterId, envs, images);
-
     // environment
     const environment = {};
 
     // images
-    images.forEach(async ({ key, image_id: _id }) => {
+    for (let index = 0; index < images.length; index++) {
+      const { key, image_id: _id } = images[index];
       const image = await ctx.model.Image.findOne({ _id });
-      const imageTag = await ctx.model.ImageTag.findOne({ _id });
-      if (!image || !imageTag) return;
-      environment[key] = image.repo_full_name + ':' + imageTag.tag;
-    });
+      const imageTag = await ctx.model.ImageTag.findOne({ image: _id });
+      if (image && imageTag) {
+        environment[key] = image.repo_full_name + ':' + imageTag.tag;
+      }
+    }
 
     // envs
-    envs.forEach(({ key, value }) => {
-      if (!key) return;
+    for (const index in envs) {
+      const { key, value } = envs[index];
+      if (!key) continue;
       environment[key] = value;
-    });
+    }
 
     // update
     const result = await this.ctx.service.cluster.updateApp(clusterId, appName, {
@@ -51,6 +52,7 @@ class DeployService extends Service {
     console.log('#deploy.update', result);
 
     return result;
+
   }
 
 }
