@@ -11,7 +11,9 @@ class DeployService extends Service {
     });
 
     if (!deploy) {
-      this.ctx.throw(500, 'not exist');
+      return {
+        message: 'deploy not exist.',
+      };
     }
 
     const { template, app: appName, cluster: clusterId, envs, images, enabled } = deploy;
@@ -26,8 +28,8 @@ class DeployService extends Service {
     const environment = {};
 
     // images
-    for (let index = 0; index < images.length; index++) {
-      const { key, image_id: _id } = images[index];
+    for (const img of images) {
+      const { key, image_id: _id } = img;
       const image = await ctx.model.Image.findOne({ _id });
       const imageTag = await ctx.model.ImageTag.findOne({ image: _id });
       if (image && imageTag) {
@@ -36,8 +38,8 @@ class DeployService extends Service {
     }
 
     // envs
-    for (const index in envs) {
-      const { key, value } = envs[index];
+    for (const env of envs) {
+      const { key, value } = env;
       if (!key) continue;
       environment[key] = value;
     }
@@ -49,12 +51,9 @@ class DeployService extends Service {
       version: Date.now().toString(),
     });
 
-    console.log('#deploy.update', result);
-
+    ctx.app.logger.info('#deploy.update', result);
     return result;
-
   }
-
 }
 
 module.exports = DeployService;
