@@ -4,9 +4,17 @@ const mongoosePaginate = require('mongoose-paginate');
 module.exports = app => {
   const mongoose = app.mongoose;
   const Schema = new mongoose.Schema({
-    cluster: String,
     app: String,
     template: String,
+    enabled: Boolean,
+    cluster: {
+      name: String,
+      cluster_id: String,
+    },
+    trigger: {
+      image_id: String,
+      repo_full_name: String,
+    },
     envs: [{
       key: String,
       value: String,
@@ -14,9 +22,8 @@ module.exports = app => {
     images: [{
       key: String,
       image_id: String,
+      repo_full_name: String,
     }],
-    enabled: Boolean,
-    trigger: String, // ImageID
   }, {
     timestamps: {
       createdAt: 'created_at',
