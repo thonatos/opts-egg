@@ -43,7 +43,7 @@ class ClusterService extends Service {
       });
       return status;
     } catch (error) {
-      console.log(error.response);
+      ctx.app.logger.error(error.response);
       ctx.throw(500, '#cluster: update failed');
     }
   }
