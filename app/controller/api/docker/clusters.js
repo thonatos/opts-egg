@@ -5,7 +5,7 @@ const Controller = require('egg').Controller;
 class ClustersController extends Controller {
   async index() {
     const { ctx } = this;
-    const { limit, offset, s } = ctx.query;
+    const { limit, page, s } = ctx.query;
 
     let query = {};
     let options = {};
@@ -13,7 +13,7 @@ class ClustersController extends Controller {
     if (typeof s === 'undefined') {
       options = {
         select: '-ca -key -cert -host',
-        skip: parseInt(offset) || 0,
+        page: parseInt(page) || 1,
         limit: parseInt(limit) || 10,
       };
     }

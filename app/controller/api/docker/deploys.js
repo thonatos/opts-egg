@@ -6,9 +6,9 @@ class DeploysController extends Controller {
   // gets
   async index() {
     const { ctx } = this;
-    const { limit, offset } = ctx.query;
+    const { limit, page } = ctx.query;
     const deploys = await ctx.model.Deploy.paginate({}, {
-      skip: parseInt(offset),
+      page: parseInt(page) || 1,
       limit: parseInt(limit) || 10,
     });
     ctx.body = ctx.helper.formatMongoosePaginateData(deploys);

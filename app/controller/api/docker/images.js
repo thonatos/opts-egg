@@ -6,14 +6,14 @@ class ImagesController extends Controller {
   // gets
   async index() {
     const { ctx } = this;
-    const { limit, offset, s } = this.ctx.query;
+    const { limit, page, s } = this.ctx.query;
 
     let query = {};
     let options = {};
 
     if (typeof s === 'undefined') {
       options = {
-        skip: parseInt(offset) || 0,
+        page: parseInt(page) || 1,
         limit: parseInt(limit) || 10,
       };
     }
