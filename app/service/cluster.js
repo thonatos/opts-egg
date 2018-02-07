@@ -20,6 +20,7 @@ class ClusterService extends Service {
       });
       return data;
     } catch (error) {
+      ctx.logger.error(error.response);
       ctx.throw(500, '#cluster: request info failed');
     }
   }
@@ -43,7 +44,7 @@ class ClusterService extends Service {
       });
       return status;
     } catch (error) {
-      ctx.app.logger.error(error.response);
+      ctx.logger.error(error.response);
       ctx.throw(500, '#cluster: update failed');
     }
   }

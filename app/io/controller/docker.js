@@ -7,7 +7,7 @@ class ExchangeController extends Controller {
     const { ctx, app } = this;
     const nsp = app.io.of('/docker');
     const client = ctx.socket.id;
-    const message = ctx.args[ 0 ] || {};
+    const message = ctx.args[0] || {};
 
     try {
       const { target, payload } = message;
@@ -20,7 +20,7 @@ class ExchangeController extends Controller {
       });
       nsp.emit(target, msg);
     } catch (error) {
-      app.logger.error(error);
+      ctx.logger.error(error);
     }
   }
 }

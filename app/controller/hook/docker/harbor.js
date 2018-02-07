@@ -4,7 +4,7 @@ const Controller = require('egg').Controller;
 
 class HarborController extends Controller {
   async create() {
-    const { ctx, app } = this;
+    const { ctx } = this;
     const { callbackUrl } = ctx.hook;
     const body = ctx.request.body;
     const events = ctx.helper.formatDockerRegistyEvents(body);
@@ -22,7 +22,7 @@ class HarborController extends Controller {
         // 部署应用
         const { image } = data;
         const deploy = await ctx.service.deploy.update(image._id);
-        ctx.app.logger.info(deploy);
+        ctx.logger.info(deploy);
 
         // 发送通知
         await ctx.service.notify.send(callbackUrl, data, {
@@ -30,7 +30,7 @@ class HarborController extends Controller {
         });
 
       } catch (error) {
-        app.logger.error(error);
+        ctx.logger.error(error);
       }
     }
 
