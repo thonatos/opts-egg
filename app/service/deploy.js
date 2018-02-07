@@ -7,7 +7,7 @@ class DeployService extends Service {
     const { ctx } = this;
 
     const deploy = await ctx.model.Deploy.findOne({
-      trigger: triggerId,
+      'trigger.image_id': triggerId,
     });
 
     if (!deploy) {
@@ -16,7 +16,8 @@ class DeployService extends Service {
       };
     }
 
-    const { template, app: appName, cluster: clusterId, envs, images, enabled } = deploy;
+    const { template, app: appName, cluster: clusterInfo, envs, images, enabled } = deploy;
+    const { cluster_id: clusterId } = clusterInfo;
 
     if (!enabled) {
       return {
@@ -51,7 +52,7 @@ class DeployService extends Service {
       version: Date.now().toString(),
     });
 
-    ctx.app.logger.info('#deploy.update', result);
+    ctx.logger.info('#deploy.update', result);
     return result;
   }
 }
