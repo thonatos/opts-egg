@@ -13,7 +13,7 @@ class AliyunController extends Controller {
 
     // 部署应用
     const { image } = data;
-    const deploy = await ctx.service.deploy.update(image._id);
+    const deploy = await ctx.service.deploy.trigger(image._id);
     ctx.logger.info(deploy);
 
     // 发送通知

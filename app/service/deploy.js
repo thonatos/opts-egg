@@ -3,24 +3,14 @@
 const Service = require('egg').Service;
 
 class DeployService extends Service {
-  async update(triggerId = '') {
+  async update(deploy) {
     const { ctx } = this;
-
-    const deploy = await ctx.model.Deploy.findOne({
-      'trigger.image_id': triggerId,
-    });
-
-    if (!deploy) {
-      return {
-        message: 'deploy not exist.',
-      };
-    }
-
     const { template, app: appName, cluster: clusterInfo, envs, images, enabled } = deploy;
     const { cluster_id: clusterId } = clusterInfo;
 
     if (!enabled) {
       return {
+        code: 404,
         message: 'deploy has been disabled.',
       };
     }
@@ -32,7 +22,7 @@ class DeployService extends Service {
     for (const img of images) {
       const { key, image_id: _id } = img;
       const image = await ctx.model.Image.findOne({ _id });
-      const imageTag = await ctx.model.ImageTag.findOne({ image: _id });
+      const imageTag = await ctx.model.ImageTag.findOne({ image: _id }, null, { sort: { created_at: -1 } });
       if (image && imageTag) {
         environment[key] = image.repo_full_name + ':' + imageTag.tag;
       }
@@ -46,14 +36,44 @@ class DeployService extends Service {
     }
 
     // update
-    const result = await this.ctx.service.cluster.updateApp(clusterId, appName, {
-      environment,
-      template,
-      version: Date.now().toString(),
+    try {
+      const status = await ctx.service.cluster.updateApp(clusterId, appName, {
+        environment,
+        template,
+        version: Date.now().toString(),
+      });
+
+      return {
+        code: status,
+      };
+    } catch (error) {
+      return {
+        code: 500,
+        message: 'service update error.',
+      };
+    }
+  }
+
+  async trigger(triggerId = '') {
+    const { ctx } = this;
+    const deploys = await ctx.model.Deploy.find({
+      'trigger.image_id': triggerId,
     });
 
-    ctx.logger.info('#deploy.update', result);
-    return result;
+    if (deploys.length === 0) {
+      return {
+        message: 'deploy not exist.',
+      };
+    }
+
+    const results = [];
+
+    for (const deploy of deploys) {
+      const result = await this.update(deploy);
+      results.push(result);
+    }
+
+    return results;
   }
 }
 
