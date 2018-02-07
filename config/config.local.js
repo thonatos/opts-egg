@@ -5,24 +5,6 @@ exports.mongoose = {
   options: {},
 };
 
-exports.io = {
-  init: {
-    wsEngine: 'uws',
-  },
-  namespace: {
-    '/docker': {
-      connectionMiddleware: [
-        'docker',
-      ],
-      packetMiddleware: [],
-    },
-  },
-  redis: {
-    host: '127.0.0.1',
-    port: 6379,
-  },
-};
-
 exports.jwt = {
   secret: 'opts',
   enable: true,

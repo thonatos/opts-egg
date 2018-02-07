@@ -13,11 +13,6 @@ exports.graphql = {
   package: 'egg-graphql',
 };
 
-exports.io = {
-  enable: false,
-  package: 'egg-socket.io',
-};
-
 exports.jwt = {
   enable: true,
   package: 'egg-jwt',

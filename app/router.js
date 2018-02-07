@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = ({ router, controller, io }) => {
+module.exports = ({ router, controller }) => {
   router.get('/', 'home.index');
 
   // api
@@ -15,6 +15,4 @@ module.exports = ({ router, controller, io }) => {
   // auth
   router.post('/auth/jwt/sign', controller.auth.jwt.sign);
 
-  // socket.io
-  // io.of('/docker').route('exchange', io.controller.docker.exchange);
 };
