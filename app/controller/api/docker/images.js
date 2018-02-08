@@ -15,7 +15,7 @@ class ImagesController extends Controller {
     const { ctx } = this;
     const { options } = ctx.helper.formatPaginatedQuery(ctx.query);
     const query = {
-      image: ctx.params,
+      image: ctx.params.id,
     };
     const tags = await ctx.model.ImageTag.paginate(query, options);
     ctx.body = ctx.helper.formatMongoosePaginateData(tags);
