@@ -5,39 +5,12 @@ const Controller = require('egg').Controller;
 class ClustersController extends Controller {
   async index() {
     const { ctx } = this;
-    const { limit, page, s } = ctx.query;
-
-    let query = {};
-    let options = {};
-
-    if (typeof s === 'undefined') {
-      options = {
+    const { query, options } = ctx.helper.formatPaginatedQuery(ctx.query);
+    const clusters = await ctx.model.Cluster.paginate(query,
+      Object.assign(options, {
         select: '-ca -key -cert -host',
-        page: parseInt(page) || 1,
-        limit: parseInt(limit) || 10,
-      };
-    }
-
-    if (s === '') {
-      options = {
-        select: '-ca -key -cert -host',
-        limit: 1000,
-      };
-    }
-
-    if (typeof s !== 'undefined' && s !== '') {
-      query = {
-        name: {
-          $regex: s,
-        },
-      };
-      options = {
-        select: '-ca -key -cert -host',
-        limit: 1000,
-      };
-    }
-
-    const clusters = await ctx.model.Cluster.paginate(query, options);
+      })
+    );
     ctx.body = ctx.helper.formatMongoosePaginateData(clusters);
   }
 

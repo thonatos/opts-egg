@@ -1,63 +1,103 @@
 'use strict';
 
-module.exports = {
-  parseMsg(action, payload, metadata = {}) {
-    const meta = Object.assign({}, {
-      timestamp: Date.now(),
-    }, metadata);
+const parseMsg = (action, payload, metadata = {}) => {
+  const meta = Object.assign({}, {
+    timestamp: Date.now(),
+  }, metadata);
 
+  return {
+    data: {
+      action,
+      payload,
+    },
+    meta,
+  };
+};
+
+const formatDockerRegistyEvents = ({ events }, region = 'default') => {
+  return events.map(event => {
+    const { target, action, timestamp } = event;
+    const { repository, digest, tag } = target;
+
+    if (action !== 'push' || tag === undefined) {
+      return null;
+    }
+
+    const [
+      namespace,
+      name,
+    ] = repository.split('/');
     return {
-      data: {
-        action,
-        payload,
+      push_data: {
+        tag,
+        digest,
+        pushed_at: timestamp,
       },
-      meta,
-    };
-  },
-
-  formatDockerRegistyEvents({ events }, region = 'default') {
-    return events.map(event => {
-      const { target, action, timestamp } = event;
-      const { repository, digest, tag } = target;
-
-      if (action !== 'push' || tag === undefined) {
-        return null;
-      }
-
-      const [
+      repository: {
         namespace,
         name,
-      ] = repository.split('/');
-      return {
-        push_data: {
-          tag,
-          digest,
-          pushed_at: timestamp,
-        },
-        repository: {
-          namespace,
-          name,
-          region,
-          repo_full_name: repository,
-        },
-      };
-    });
-  },
-
-  formatMongoosePaginateData(data) {
-    const { total, limit, docs } = data;
-    const meta = {
-      total,
-      limit,
+        region,
+        repo_full_name: repository,
+      },
     };
+  });
+};
 
-    data.page && (meta.page = data.page);
-    data.pages && (meta.pages = data.pages);
-    data.offset && (meta.offset = data.offset);
+const formatMongoosePaginateData = response => {
+  const { total, limit, docs: data } = response;
+  const meta = {
+    total,
+    limit,
+  };
 
-    return {
-      meta,
-      data: docs,
+  response.page && (meta.page = response.page);
+  response.pages && (meta.pages = response.pages);
+  response.offset && (meta.offset = response.offset);
+
+  return {
+    meta,
+    data,
+  };
+};
+
+const formatPaginatedQuery = ({ limit, page, s }, opt = {}) => {
+  const searchKey = opt.searchKey || 'name';
+  let query = {};
+  let options = {};
+
+  if (typeof s === 'undefined') {
+    options = {
+      page: parseInt(page) || 1,
+      limit: parseInt(limit) || 10,
     };
-  },
+  }
+
+  if (s === '') {
+    options = {
+      limit: 1000,
+    };
+  }
+
+  if (typeof s !== 'undefined' && s !== '') {
+    query = {
+      [searchKey]: {
+        $regex: s,
+      },
+    };
+    options = {
+      limit: 1000,
+    };
+  }
+
+  return {
+    query,
+    options,
+  };
+};
+
+module.exports = {
+  parseMsg,
+  formatDockerRegistyEvents,
+  formatPaginatedQuery,
+  formatMongoosePaginateData,
 };

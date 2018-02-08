@@ -6,37 +6,19 @@ class ImagesController extends Controller {
   // gets
   async index() {
     const { ctx } = this;
-    const { limit, page, s } = this.ctx.query;
-
-    let query = {};
-    let options = {};
-
-    if (typeof s === 'undefined') {
-      options = {
-        page: parseInt(page) || 1,
-        limit: parseInt(limit) || 10,
-      };
-    }
-
-    if (s === '') {
-      options = {
-        limit: 1000,
-      };
-    }
-
-    if (typeof s !== 'undefined' && s !== '') {
-      query = {
-        name: {
-          $regex: s,
-        },
-      };
-      options = {
-        limit: 1000,
-      };
-    }
-
+    const { query, options } = ctx.helper.formatPaginatedQuery(ctx.query);
     const images = await ctx.model.Image.paginate(query, options);
     ctx.body = ctx.helper.formatMongoosePaginateData(images);
+  }
+
+  async show() {
+    const { ctx } = this;
+    const { options } = ctx.helper.formatPaginatedQuery(ctx.query);
+    const query = {
+      image: ctx.params,
+    };
+    const tags = await ctx.model.ImageTag.paginate(query, options);
+    ctx.body = ctx.helper.formatMongoosePaginateData(tags);
   }
 }
 
