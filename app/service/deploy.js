@@ -6,7 +6,7 @@ class DeployService extends Service {
   async update(deploy) {
     const { ctx } = this;
     const { template, app: appName, cluster: clusterInfo, envs, images, enabled } = deploy;
-    const { cluster_id: clusterId } = clusterInfo;
+    const { cluster_id: clusterId, name: clusterName } = clusterInfo;
 
     if (!enabled) {
       return {

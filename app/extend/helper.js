@@ -1,5 +1,7 @@
 'use strict';
 
+const https = require('https');
+
 const parseMsg = (action, payload, metadata = {}) => {
   const meta = Object.assign({}, {
     timestamp: Date.now(),
@@ -95,8 +97,22 @@ const formatPaginatedQuery = ({ limit, page, s }, opt = {}) => {
   };
 };
 
+const getHttpsAgent = ({ ca, key, cert }) => {
+  if (!ca || !key || !cert) {
+    return null;
+  }
+
+  const agent = new https.Agent({
+    ca,
+    key,
+    cert,
+  });
+  return agent;
+};
+
 module.exports = {
   parseMsg,
+  getHttpsAgent,
   formatDockerRegistyEvents,
   formatPaginatedQuery,
   formatMongoosePaginateData,

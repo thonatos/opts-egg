@@ -1,7 +1,6 @@
 'use strict';
 
 const axios = require('axios');
-const https = require('https');
 const Service = require('egg').Service;
 
 class ClusterService extends Service {
@@ -9,14 +8,10 @@ class ClusterService extends Service {
   async getProject(cluster) {
     const { ctx } = this;
     try {
-      const { ca, key, cert, host } = cluster;
-      const agent = new https.Agent({
-        ca,
-        key,
-        cert,
-      });
+      const { host } = cluster;
+      const httpsAgent = ctx.helper.getHttpsAgent(cluster);
       const { data } = await axios.get(`${host}/projects/`, {
-        httpsAgent: agent,
+        httpsAgent,
       });
       return data;
     } catch (error) {
@@ -33,14 +28,10 @@ class ClusterService extends Service {
     });
 
     try {
-      const { ca, key, cert, host } = cluster;
-      const agent = new https.Agent({
-        ca,
-        key,
-        cert,
-      });
+      const { host } = cluster;
+      const httpsAgent = ctx.helper.getHttpsAgent(cluster);
       const { status } = await axios.post(`${host}/projects/${name}/update`, params, {
-        httpsAgent: agent,
+        httpsAgent,
       });
       return status;
     } catch (error) {
