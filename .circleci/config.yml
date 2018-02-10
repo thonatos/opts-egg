@@ -5,11 +5,11 @@ jobs:
     steps:
       - checkout
       - run: 
-          name: build
-          command: docker build --rm=false -t implementsio/opts-egg:$CIRCLE_SHA1 .
+          name: build docker image
+          command: docker build --rm=false -t implementsio/opts-egg .
       - run: 
-          name: login
+          name: login to hub.docker.com
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
-          name: push
-          command: docker push implementsio/opts-egg:$CIRCLE_SHA1
+          name: push to hub.docker.com
+          command: docker push implementsio/opts-egg
