@@ -19,9 +19,13 @@ module.exports = app => {
       type: String,
       require: true,
     },
-    namespace: {
+    version: {
       type: String,
       require: true,
+    },
+    namespace: {
+      type: String,
+      default: 'default',
     },
     ca: {
       type: String,
