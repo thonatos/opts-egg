@@ -1,5 +1,13 @@
 'use strict';
+
 const mongoosePaginate = require('mongoose-paginate');
+const options = {
+  collection: 'images_tags',
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+  },
+};
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -8,13 +16,7 @@ module.exports = app => {
     digest: String,
     tag: String,
     pushed_at: Date,
-  }, {
-    collection: 'images_tags',
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    },
-  });
+  }, options);
 
   Schema.plugin(mongoosePaginate);
   return mongoose.model('ImageTag', Schema);

@@ -1,5 +1,11 @@
 'use strict';
 const mongoosePaginate = require('mongoose-paginate');
+const options = {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+  },
+};
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -10,12 +16,7 @@ module.exports = app => {
     ca: String,
     key: String,
     cert: String,
-  }, {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    },
-  });
+  }, options);
 
   Schema.plugin(mongoosePaginate);
   return mongoose.model('Cluster', Schema);

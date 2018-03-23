@@ -1,5 +1,12 @@
 'use strict';
+
 const mongoosePaginate = require('mongoose-paginate');
+const options = {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
+  },
+};
 
 module.exports = app => {
   const mongoose = app.mongoose;
@@ -8,12 +15,7 @@ module.exports = app => {
     namespace: String,
     region: String,
     repo_full_name: String,
-  }, {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
-    },
-  });
+  }, options);
 
   Schema.plugin(mongoosePaginate);
   return mongoose.model('Image', Schema);
