@@ -2,7 +2,6 @@
 
 const crypto = require('crypto');
 const options = {
-  collection: 'images_tags',
   timestamps: {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
