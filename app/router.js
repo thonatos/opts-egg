@@ -5,6 +5,7 @@ module.exports = ({ router, controller }) => {
 
   // api
   router.resources('docker/clusters', '/api/docker/clusters', controller.api.docker.clusters);
+  router.resources('docker/clusters_kubernetes', '/api/docker/clusters_kubernetes', controller.api.docker.clustersKubernetes);
   router.resources('docker/deploys', '/api/docker/deploys', controller.api.docker.deploys);
   router.resources('docker/images', '/api/docker/images', controller.api.docker.images);
 
