@@ -1,4 +1,5 @@
 'use strict';
+
 const mongoosePaginate = require('mongoose-paginate');
 const options = {
   timestamps: {
