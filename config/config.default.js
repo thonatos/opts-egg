@@ -7,6 +7,11 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1505898084646_4945';
 
   // add your config here
+  config.logger = {
+    level: process.env.EGG_DEBUG ? 'DEBUG' : 'INFO',
+    consoleLevel: process.env.EGG_DEBUG ? 'DEBUG' : 'INFO',
+  };
+
   config.bodyParser = {
     extendTypes: {
       json: [
@@ -35,9 +40,12 @@ module.exports = appInfo => {
   };
 
   config.security = {
-    domainWhiteList: [
-      'http://localhost:3000', // dev
-    ],
+    domainWhiteList:
+      process.env.EGG_WHITELIST
+        ? process.env.EGG_WHITELIST.split(',')
+        : [
+          'http://localhost:3000',
+        ],
     csrf: {
       enable: false,
       ignoreJSON: true, // 默认为 false，当设置为 true 时，将会放过所有 content-type 为 `application/json` 的请求
