@@ -77,6 +77,7 @@ module.exports = appInfo => {
   config.mongoose = {
     url: process.env.EGG_MONGOOSE_URL || 'mongodb://localhost:27017/devops',
     options: {},
+    agent: true,
   };
 
   // Notifications

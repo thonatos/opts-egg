@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = app => {
+module.exports = agent => {
   const initAdministrator = async () => {
-    const administrator = app.config.administrator || false;
+    const administrator = agent.config.administrator || false;
     if (!administrator) {
-      app.logger.info(`\n
+      agent.logger.info(`\n
       #WARNING: 
 
         Please add default administrator to config.{env}.js
@@ -15,28 +15,30 @@ module.exports = app => {
 
     const { username, userrole, password } = administrator;
 
-    const existed = await app.model.Member.findOne({
+    const existed = await agent.model.Member.findOne({
       username,
       userrole,
     });
 
+    console.log('existed', existed);
+
     if (existed) return;
 
-    const newAdmin = new app.model.Member({
+    const newAdmin = new agent.model.Member({
       username,
       userrole,
     });
     newAdmin.setPassword(password);
     await newAdmin.save();
 
-    app.logger.info(`\n
+    agent.logger.info(`\n
     #INFO: 
 
       Administrator(${username}) has been added to database .
     \n`);
   };
 
-  app.beforeStart(async () => {
+  agent.beforeStart(async () => {
     await initAdministrator();
   });
 };
