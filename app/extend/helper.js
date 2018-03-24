@@ -16,35 +16,6 @@ const parseMsg = (action, payload, metadata = {}) => {
   };
 };
 
-const formatDockerRegistyEvents = ({ events }, region = 'default') => {
-  return events.map(event => {
-    const { target, action, timestamp } = event;
-    const { repository, digest, tag } = target;
-
-    if (action !== 'push' || tag === undefined) {
-      return null;
-    }
-
-    const [
-      namespace,
-      name,
-    ] = repository.split('/');
-    return {
-      push_data: {
-        tag,
-        digest,
-        pushed_at: timestamp,
-      },
-      repository: {
-        namespace,
-        name,
-        region,
-        repo_full_name: repository,
-      },
-    };
-  });
-};
-
 const formatMongoosePaginateData = response => {
   const { total, limit, docs: data } = response;
   const meta = {
@@ -113,7 +84,6 @@ const getHttpsAgent = ({ ca, key, cert }) => {
 module.exports = {
   parseMsg,
   getHttpsAgent,
-  formatDockerRegistyEvents,
   formatPaginatedQuery,
   formatMongoosePaginateData,
 };

@@ -2,12 +2,41 @@
 
 const Controller = require('egg').Controller;
 
+const formatDockerRegistyEvents = ({ events }, region = 'default') => {
+  return events.map(event => {
+    const { target, action, timestamp } = event;
+    const { repository, digest, tag } = target;
+
+    if (action !== 'push' || tag === undefined) {
+      return null;
+    }
+
+    const [
+      namespace,
+      name,
+    ] = repository.split('/');
+    return {
+      push_data: {
+        tag,
+        digest,
+        pushed_at: timestamp,
+      },
+      repository: {
+        namespace,
+        name,
+        region,
+        repo_full_name: repository,
+      },
+    };
+  });
+};
+
 class HarborController extends Controller {
   async create() {
     const { ctx } = this;
     const { callbackUrl } = ctx.hook;
     const body = ctx.request.body;
-    const events = ctx.helper.formatDockerRegistyEvents(body);
+    const events = formatDockerRegistyEvents(body);
 
     for (const index in events) {
       const event = events[index];
