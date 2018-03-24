@@ -12,6 +12,7 @@ module.exports = ({ router, controller }) => {
   // webhook
   router.post('/hook/docker/aliyun', controller.hook.docker.aliyun.create);
   router.post('/hook/docker/harbor', controller.hook.docker.harbor.create);
+  router.post('/hook/docker/hub', controller.hook.docker.hub.create);
 
   // auth
   router.post('/auth/jwt/sign', controller.auth.jwt.sign);
