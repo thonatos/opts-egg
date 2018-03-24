@@ -1,5 +1,13 @@
 'use strict';
 
+const getWhiteList = () => {
+  return [
+    'http://localhost:3000',
+  ].concat(
+    process.env.EGG_WHITELIST && process.env.EGG_WHITELIST.split(',') || []
+  );
+};
+
 module.exports = appInfo => {
   const config = exports = {};
 
@@ -40,12 +48,7 @@ module.exports = appInfo => {
   };
 
   config.security = {
-    domainWhiteList:
-      process.env.EGG_WHITELIST
-        ? process.env.EGG_WHITELIST.split(',')
-        : [
-          'http://localhost:3000',
-        ],
+    domainWhiteList: getWhiteList(),
     csrf: {
       enable: false,
       ignoreJSON: true, // 默认为 false，当设置为 true 时，将会放过所有 content-type 为 `application/json` 的请求
