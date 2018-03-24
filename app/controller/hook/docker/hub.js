@@ -3,13 +3,13 @@
 const Controller = require('egg').Controller;
 
 const formatDockerRegistyEvents = ({ push_data, repository, region = 'default' }) => {
-  const { tag, pushed_at, images } = push_data;
+  const { tag, images } = push_data;
   const { namespace, name, repo_name: repo_full_name } = repository;
   return {
     push_data: {
       tag,
       digest: images[0],
-      pushed_at,
+      pushed_at: new Date(),
     },
     repository: {
       name,
