@@ -21,6 +21,10 @@
 
 > Backend For (Dev)Opts.
 
+---
+
+[![CircleCI](https://circleci.com/gh/thonatos/opts-egg.svg?style=svg)](https://circleci.com/gh/thonatos/opts-egg)
+
 ## QuickStart
 
 <!-- add docs here for user -->
