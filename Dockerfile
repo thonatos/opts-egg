@@ -3,7 +3,7 @@ FROM node:8.9.4-alpine
 ENV TIME_ZONE=Asia/Shanghai
 
 RUN \
-  && mkdir -p /usr/src/app \
+  mkdir -p /usr/src/app \
   && apk add --no-cache tzdata \
   && echo "${TIME_ZONE}" > /etc/timezone \ 
   && ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime 
