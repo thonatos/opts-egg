@@ -5,8 +5,10 @@ const Service = require('egg').Service;
 class DeployService extends Service {
   async update(deploy) {
     const { ctx } = this;
-    const { template, app: appName, cluster: clusterInfo, envs, images, enabled } = deploy;
+    const { template, app: appName, cluster: clusterInfo, envs, images, enabled, platform } = deploy;
     const { cluster_id: clusterId } = clusterInfo;
+
+    ctx.logger.debug('deploy', deploy);
 
     if (!enabled) {
       return {
@@ -35,22 +37,51 @@ class DeployService extends Service {
       environment[key] = value;
     }
 
-    // update
-    try {
-      const status = await ctx.service.cluster.updateApp(clusterId, appName, {
-        environment,
-        template,
-        version: Date.now().toString(),
-      });
+    ctx.logger.debug('platform', platform);
 
-      return {
-        code: status,
-      };
-    } catch (error) {
+    // update
+    if (platform === '') {
       return {
         code: 500,
-        message: 'service update error.',
+        message: 'platform is required.',
       };
+    }
+
+    if (platform === 'kubernetes') {
+      try {
+        const status = await ctx.service.clusterKubernetes.updateDeployments(clusterId, appName, {
+          environment,
+          template,
+        });
+
+        return {
+          code: status,
+        };
+      } catch (error) {
+        return {
+          code: 500,
+          message: 'service update error.',
+        };
+      }
+    }
+
+    if (platform === 'docker_swarm') {
+      try {
+        const status = await ctx.service.cluster.updateApp(clusterId, appName, {
+          environment,
+          template,
+          version: Date.now().toString(),
+        });
+
+        return {
+          code: status,
+        };
+      } catch (error) {
+        return {
+          code: 500,
+          message: 'service update error.',
+        };
+      }
     }
   }
 
