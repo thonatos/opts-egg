@@ -20,7 +20,7 @@ module.exports = agent => {
       userrole,
     });
 
-    console.log('existed', existed);
+    agent.logger.info('existed', existed);
 
     if (existed) return;
 
