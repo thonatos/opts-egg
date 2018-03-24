@@ -7,7 +7,28 @@ module.exports = appInfo => {
   config.keys = appInfo.name + '_1505898084646_4945';
 
   // add your config here
+  config.bodyParser = {
+    extendTypes: {
+      json: [
+        'application/vnd.docker.distribution.events.v1+json',
+      ],
+    },
+  };
 
+  config.middleware = [
+    'graphql',
+    'dockerHookAuth',
+  ];
+
+  config.graphql = {
+    router: '/graphql',
+    // 是否加载到 app 上，默认开启
+    app: true,
+    // 是否加载到 agent 上，默认关闭
+    agent: false,
+  };
+
+  // Security
   config.cors = {
     allowMethods: 'GET,HEAD,OPTIONS,PUT,POST,DELETE,PATCH',
     credentials: true,
@@ -23,26 +44,36 @@ module.exports = appInfo => {
     },
   };
 
-  config.bodyParser = {
-    extendTypes: {
-      json: [ 'application/vnd.docker.distribution.events.v1+json' ],
-    },
+  // Auth
+  config.jwt = {
+    secret: 'opts',
+    enable: true,
+    match: '/api',
   };
-
-  config.middleware = [ 'graphql', 'dockerHookAuth' ];
 
   config.dockerHookAuth = {
     enable: true,
     match: '/hook/docker',
   };
 
-  config.graphql = {
-    router: '/graphql',
-    // 是否加载到 app 上，默认开启
-    app: true,
-    // 是否加载到 agent 上，默认关闭
-    agent: false,
+  config.administrator = {
+    username: process.env.EGG_ADMINISTRATOR_USERNAEM || 'suyi',
+    password: process.env.EGG_ADMINISTRATOR_PASSWORD || '123456',
+    userrole: 'admin',
   };
 
+  // Database
+  config.mongoose = {
+    url: process.env.EGG_MONGOOSE_URL || 'mongodb://localhost:27017/devops',
+    options: {},
+  };
+
+  // Notifications
+  config.notifications = {
+    dingtalk: {
+      type: 'dingtalk',
+      callbackUrl: process.env.EGG_DINGTALK_ROBOT_URL || '',
+    },
+  };
   return config;
 };
