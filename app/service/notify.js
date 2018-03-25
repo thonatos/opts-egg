@@ -4,23 +4,41 @@ const axios = require('axios');
 const Service = require('egg').Service;
 
 class NotifyService extends Service {
-  async send(url, msg, opts = {}) {
+  async send(message) {
     const { ctx } = this;
-    switch (opts.type) {
-      case 'dingtalk':
-        return this.sendToDingtalkRobot(...arguments);
+    const { senders, adapters } = ctx.app.config.notifications;
 
-      default:
-        ctx.logger.info('not implemented');
-        break;
+    for (const sender of senders) {
+      const adapter = adapters[sender];
+
+      try {
+        await this.handle(sender, adapter, message);
+      } catch (error) {
+        ctx.logger.error(error);
+      }
     }
-    return null;
+  }
+
+  async handle(sender, adapter, message) {
+    const { ctx } = this;
+
+    let handler = async () => {
+      ctx.logger.info('#not implemented');
+    };
+
+    if (sender === 'dingtalk') {
+      ctx.logger.info('#dingtalk');
+      handler = this.sendToDingtalkRobot;
+    }
+
+    return handler.call(this, adapter, message);
   }
 
   // https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.karFPe&treeId=257&articleId=105735&docType=1
-  async sendToDingtalkRobot(url, data) {
+  async sendToDingtalkRobot(config, message) {
     const { ctx } = this;
-    const { image, tag } = data;
+    const { url } = config;
+    const { image, tag } = message;
     const msg = {
       msgtype: 'markdown',
       markdown: {
@@ -32,12 +50,8 @@ class NotifyService extends Service {
       },
     };
     if (!url) return;
-    try {
-      const { data } = await axios.post(url, msg);
-      ctx.logger.info('#nofity.sendToDingtalkRobot', data);
-    } catch (error) {
-      ctx.logger.error(error);
-    }
+    const { data } = await axios.post(url, msg);
+    ctx.logger.info('#nofity.sendToDingtalkRobot', data);
   }
 }
 
