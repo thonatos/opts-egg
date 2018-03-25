@@ -21,19 +21,17 @@ class DeploysController extends Controller {
 
   async update() {
     const { ctx } = this;
-    const { id } = ctx.params;
     const body = ctx.request.body;
     const cluster = await ctx.model.Deploy.update({
-      _id: id,
+      _id: ctx.params.id,
     }, body);
     ctx.body = cluster;
   }
 
   async destroy() {
     const { ctx } = this;
-    const { id } = ctx.params;
     const cluster = await ctx.model.Deploy.remove({
-      _id: id,
+      _id: ctx.params.id,
     });
     ctx.body = cluster;
   }

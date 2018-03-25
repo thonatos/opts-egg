@@ -24,19 +24,17 @@ class ClustersKubernetesController extends Controller {
 
   async update() {
     const { ctx } = this;
-    const { id: _id } = ctx.params;
     const body = ctx.request.body;
     const cluster = await ctx.model.ClusterKubernetes.update({
-      _id,
+      _id: ctx.params.id,
     }, body);
     ctx.body = cluster;
   }
 
   async destroy() {
     const { ctx } = this;
-    const { id: _id } = ctx.params;
     const cluster = await ctx.model.ClusterKubernetes.remove({
-      _id,
+      _id: ctx.params.id,
     });
     ctx.body = cluster;
   }

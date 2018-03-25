@@ -16,9 +16,8 @@ class ClustersController extends Controller {
 
   async show() {
     const { ctx } = this;
-    const { id: _id } = ctx.params;
     const cluster = await ctx.model.Cluster.findOne({
-      _id,
+      _id: ctx.params.id,
     });
     const data = await ctx.service.cluster.getProject(cluster);
     ctx.body = data;
@@ -34,19 +33,17 @@ class ClustersController extends Controller {
 
   async update() {
     const { ctx } = this;
-    const { id: _id } = ctx.params;
     const body = ctx.request.body;
     const cluster = await ctx.model.Cluster.update({
-      _id,
+      _id: ctx.params.id,
     }, body);
     ctx.body = cluster;
   }
 
   async destroy() {
     const { ctx } = this;
-    const { id: _id } = ctx.params;
     const cluster = await ctx.model.Cluster.remove({
-      _id,
+      _id: ctx.params.id,
     });
     ctx.body = cluster;
   }
