@@ -30,7 +30,7 @@ module.exports = appInfo => {
 
   config.middleware = [
     'graphql',
-    'dockerHookAuth',
+    'auth',
   ];
 
   config.graphql = {
@@ -39,6 +39,11 @@ module.exports = appInfo => {
     app: true,
     // 是否加载到 agent 上，默认关闭
     agent: false,
+  };
+
+  config.auth = {
+    enable: true,
+    match: '/hook/docker',
   };
 
   // Security
@@ -62,9 +67,8 @@ module.exports = appInfo => {
     match: '/api',
   };
 
-  config.dockerHookAuth = {
-    enable: true,
-    match: '/hook/docker',
+  config.maidops = {
+    accessToken: process.env.EGG_MAIDOPS_ACCESS_TOKEN || 'access_token',
   };
 
   config.administrator = {
@@ -82,9 +86,13 @@ module.exports = appInfo => {
 
   // Notifications
   config.notifications = {
-    dingtalk: {
-      type: 'dingtalk',
-      callbackUrl: process.env.EGG_DINGTALK_ROBOT_URL || '',
+    senders: [
+      'dingtalk',
+    ],
+    adapters: {
+      dingtalk: {
+        url: process.env.EGG_DINGTALK_ROBOT_URL || '',
+      },
     },
   };
   return config;
