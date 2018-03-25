@@ -2,6 +2,10 @@
 
 const Controller = require('egg').Controller;
 
+const options = {
+  expiresIn: '2h',
+};
+
 class JwtController extends Controller {
   async sign() {
     const { ctx, app } = this;
@@ -14,12 +18,10 @@ class JwtController extends Controller {
 
     if (!user) {
       ctx.throw(403, 'auth faild');
-      return;
     }
 
     if (!user.validPassword(password)) {
       ctx.throw(403, 'auth faild');
-      return;
     }
 
     // sign token
@@ -30,9 +32,6 @@ class JwtController extends Controller {
       userrole,
     };
 
-    const options = {
-      expiresIn: '2h',
-    };
     const token = app.jwt.sign(
       payload,
       app.config.jwt.secret,
