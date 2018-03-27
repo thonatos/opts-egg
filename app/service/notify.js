@@ -1,6 +1,11 @@
 'use strict';
 
+const TEMPLATE_DIR = './app/public/notification';
+
+const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
+const nunjucks = require('nunjucks');
 const Service = require('egg').Service;
 
 class NotifyService extends Service {
@@ -38,20 +43,22 @@ class NotifyService extends Service {
   async sendToDingtalkRobot(config, message) {
     const { ctx } = this;
     const { url } = config;
-    const { image, tag } = message;
+    const { title, data, template } = message;
+    const tpl = fs.readFileSync(path.join(TEMPLATE_DIR, template));
+    const text = nunjucks.renderString(tpl.toString(), data);
+
     const msg = {
       msgtype: 'markdown',
       markdown: {
-        title: '#Image Pushed',
-        text: `${image.name} \n\n` +
-          `> 区域：${image.region} \n\n` +
-          `> 版本：${tag.tag} \n\n` +
-          `> 时间：${tag.pushed_at} \n\n`,
+        title,
+        text,
       },
     };
+
     if (!url) return;
-    const { data } = await axios.post(url, msg);
-    ctx.logger.info('#nofity.sendToDingtalkRobot', data);
+
+    const { data: response } = await axios.post(url, msg);
+    ctx.logger.info('#nofity.sendToDingtalkRobot', response);
   }
 }
 
