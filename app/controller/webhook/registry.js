@@ -18,12 +18,15 @@ class RegistryController extends Controller {
         const data = await ctx.service.image.create(event);
 
         // 发送通知
-        await ctx.service.notify.send(data);
+        await ctx.service.notify.send({
+          title: 'Image pushed',
+          template: 'image_pushed.md',
+          data,
+        });
 
         // 部署应用
         const { image } = data;
-        const deploy = await ctx.service.deploy.trigger(image._id);
-        ctx.logger.info(deploy);
+        await ctx.service.deploy.trigger(image._id);
 
       } catch (error) {
         ctx.logger.error(error);

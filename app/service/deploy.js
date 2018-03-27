@@ -7,7 +7,11 @@ class DeployService extends Service {
   async getImages(images = []) {
     const { ctx } = this;
     const environment = {};
-    for (const { key, image_id: _id } of images) {
+    for (const img of images) {
+      if (!img) {
+        continue;
+      }
+      const { key, image_id: _id } = img;
       const image = await ctx.model.Image.findOne({ _id });
       const imageTag = await ctx.model.ImageTag.findOne({ image: _id }, null, { sort: { created_at: -1 } });
       if (image && imageTag) {
@@ -32,63 +36,53 @@ class DeployService extends Service {
 
     ctx.logger.debug('deploy', deploy);
 
+    const message = {
+      title: 'Deployment',
+      template: 'deploy.md',
+      data: {
+        appName,
+        platform,
+        clusterId,
+      },
+    };
+
     if (!enabled) {
-      return {
-        code: 404,
-        message: 'deploy has been disabled.',
-      };
+      message.data.message = 'deploy is disabled';
+      await ctx.service.notify.send(message);
+      return;
+    }
+
+    if (!platform) {
+      message.data.message = 'platform is required';
+      await ctx.service.notify.send(message);
+      return;
     }
 
     // environment
     const _envs = await this.getEnvs(envs);
     const _images = await this.getImages(images);
     const environment = Object.assign({}, _images, _envs);
+    const version = Date.now().toString();
 
-    ctx.logger.debug('platform', platform);
+    message.data.environment = environment;
 
     // update
-    if (platform === '') {
-      return {
-        code: 500,
-        message: 'platform is required.',
-      };
-    }
+    const handler = platform === 'kubernetes'
+      ? ctx.service.kubernetes.updateDeployments
+      : ctx.service.docker.updateApp;
 
-    if (platform === 'kubernetes') {
-      try {
-        const status = await ctx.service.kubernetes.updateDeployments(clusterId, appName, {
-          environment,
-          template,
-        });
+    try {
+      await handler.call(this, clusterId, appName, {
+        environment,
+        template,
+        version,
+      });
+      message.data.message = 'submitted';
+      await ctx.service.notify.send(message);
 
-        return {
-          code: status,
-        };
-      } catch (error) {
-        return {
-          code: 500,
-          message: 'service update error.',
-        };
-      }
-    }
-
-    if (platform === 'docker') {
-      try {
-        const status = await ctx.service.docker.updateApp(clusterId, appName, {
-          environment,
-          template,
-          version: Date.now().toString(),
-        });
-
-        return {
-          code: status,
-        };
-      } catch (error) {
-        return {
-          code: 500,
-          message: 'service update error.',
-        };
-      }
+    } catch (error) {
+      message.data.message = 'error';
+      await ctx.service.notify.send(message);
     }
   }
 
@@ -99,19 +93,12 @@ class DeployService extends Service {
     });
 
     if (deploys.length === 0) {
-      return {
-        message: 'deploy not exist.',
-      };
+      return;
     }
-
-    const results = [];
 
     for (const deploy of deploys) {
-      const result = await this.update(deploy);
-      results.push(result);
+      await this.update(deploy);
     }
-
-    return results;
   }
 }
 
