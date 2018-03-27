@@ -9,12 +9,12 @@ class Cluster_kubernetesService extends Service {
   async updateDeployments(clusterId, deployment, { template, environment }) {
     const { ctx } = this;
 
-    const cluster = await ctx.model.ClusterKubernetes.findOne({
+    const kubernetes = await ctx.model.Kubernetes.findOne({
       _id: clusterId,
     });
-    const { host: url, namespace, version, ca, key, cert, user, pass } = cluster;
+    const { host: url, namespace, version, ca, key, cert, user, pass } = kubernetes;
 
-    ctx.logger.debug('cluster', cluster);
+    ctx.logger.debug('kubernetes', kubernetes);
 
     const client = new Client({
       config: {
@@ -47,7 +47,7 @@ class Cluster_kubernetesService extends Service {
       return statusCode;
     } catch (error) {
       ctx.logger.error(error);
-      ctx.throw(500, '#cluster: update failed');
+      ctx.throw(500, '#kubernetes: update failed');
     }
   }
 }

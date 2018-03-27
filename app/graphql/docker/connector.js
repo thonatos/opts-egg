@@ -11,14 +11,14 @@ class DockerConnector {
       skip: parseInt(offset),
       limit: parseInt(limit) || 10,
     });
-    return ctx.helper.formatMongoosePaginateData(images);
+    return ctx.helper.serializeResponse(images);
   }
 
   async getClusters(name) {
     const query = !name ? {} : {
       name,
     };
-    return await this.ctx.model.Cluster.find(query);
+    return await this.ctx.model.Docker.find(query);
   }
 }
 

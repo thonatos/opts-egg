@@ -10,8 +10,8 @@ class ImageService extends Service {
     const { name, namespace, region } = repository;
     let image = await ctx.model.Image.findOne({
       name,
-      namespace,
       region,
+      namespace,
     });
     if (!image) {
       image = new ctx.model.Image(repository);

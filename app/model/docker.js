@@ -2,6 +2,7 @@
 
 const mongoosePaginate = require('mongoose-paginate');
 const options = {
+  collection: 'docker',
   timestamps: {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
@@ -20,5 +21,5 @@ module.exports = app => {
   }, options);
 
   Schema.plugin(mongoosePaginate);
-  return mongoose.model('Cluster', Schema);
+  return mongoose.model('Docker', Schema);
 };

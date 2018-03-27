@@ -3,6 +3,28 @@
 const Service = require('egg').Service;
 
 class DeployService extends Service {
+
+  async getImages(images = []) {
+    const { ctx } = this;
+    const environment = {};
+    for (const { key, image_id: _id } of images) {
+      const image = await ctx.model.Image.findOne({ _id });
+      const imageTag = await ctx.model.ImageTag.findOne({ image: _id }, null, { sort: { created_at: -1 } });
+      if (image && imageTag) {
+        environment[key] = image.repo_full_name + ':' + imageTag.tag;
+      }
+    }
+    return environment;
+  }
+
+  async getEnvs(envs = []) {
+    const environment = {};
+    envs.forEach((key, value) => {
+      environment[key] = value;
+    });
+    return environment;
+  }
+
   async update(deploy) {
     const { ctx } = this;
     const { template, app: appName, cluster: clusterInfo, envs, images, enabled, platform } = deploy;
@@ -18,24 +40,9 @@ class DeployService extends Service {
     }
 
     // environment
-    const environment = {};
-
-    // images
-    for (const img of images) {
-      const { key, image_id: _id } = img;
-      const image = await ctx.model.Image.findOne({ _id });
-      const imageTag = await ctx.model.ImageTag.findOne({ image: _id }, null, { sort: { created_at: -1 } });
-      if (image && imageTag) {
-        environment[key] = image.repo_full_name + ':' + imageTag.tag;
-      }
-    }
-
-    // envs
-    for (const env of envs) {
-      const { key, value } = env;
-      if (!key) continue;
-      environment[key] = value;
-    }
+    const _envs = await this.getEnvs(envs);
+    const _images = await this.getImages(images);
+    const environment = Object.assign({}, _images, _envs);
 
     ctx.logger.debug('platform', platform);
 
@@ -49,7 +56,7 @@ class DeployService extends Service {
 
     if (platform === 'kubernetes') {
       try {
-        const status = await ctx.service.clusterKubernetes.updateDeployments(clusterId, appName, {
+        const status = await ctx.service.kubernetes.updateDeployments(clusterId, appName, {
           environment,
           template,
         });
@@ -65,9 +72,9 @@ class DeployService extends Service {
       }
     }
 
-    if (platform === 'docker_swarm') {
+    if (platform === 'docker') {
       try {
-        const status = await ctx.service.cluster.updateApp(clusterId, appName, {
+        const status = await ctx.service.docker.updateApp(clusterId, appName, {
           environment,
           template,
           version: Date.now().toString(),

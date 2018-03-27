@@ -2,21 +2,7 @@
 
 const https = require('https');
 
-const parseMsg = (action, payload, metadata = {}) => {
-  const meta = Object.assign({}, {
-    timestamp: Date.now(),
-  }, metadata);
-
-  return {
-    data: {
-      action,
-      payload,
-    },
-    meta,
-  };
-};
-
-const formatMongoosePaginateData = response => {
+const serializeResponse = response => {
   const { total, limit, docs: data } = response;
   const meta = {
     total,
@@ -33,7 +19,7 @@ const formatMongoosePaginateData = response => {
   };
 };
 
-const formatPaginatedQuery = ({ limit, page, s }, opt = {}) => {
+const serializeQuery = ({ limit, page, s }, opt = {}) => {
   const searchKey = opt.searchKey || 'name';
   let query = {};
   let options = {};
@@ -82,8 +68,7 @@ const getHttpsAgent = ({ ca, key, cert }) => {
 };
 
 module.exports = {
-  parseMsg,
   getHttpsAgent,
-  formatPaginatedQuery,
-  formatMongoosePaginateData,
+  serializeQuery,
+  serializeResponse,
 };

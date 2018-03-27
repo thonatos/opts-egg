@@ -2,7 +2,7 @@
 
 const mongoosePaginate = require('mongoose-paginate');
 const options = {
-  collection: 'clusters_kubernetes',
+  collection: 'kubernetes',
   timestamps: {
     createdAt: 'created_at',
     updatedAt: 'updated_at',
@@ -55,5 +55,5 @@ module.exports = app => {
   }, options);
 
   Schema.plugin(mongoosePaginate);
-  return mongoose.model('ClusterKubernetes', Schema);
+  return mongoose.model('Kubernetes', Schema);
 };

@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 
-class DockerController extends Controller {
+class RegistryController extends Controller {
   async handle() {
     const { ctx } = this;
     const events = ctx.events;
@@ -34,4 +34,4 @@ class DockerController extends Controller {
   }
 }
 
-module.exports = DockerController;
+module.exports = RegistryController;

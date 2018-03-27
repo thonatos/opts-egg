@@ -16,7 +16,7 @@ module.exports = app => {
     enabled: Boolean,
     platform: {
       type: String,
-      default: 'docker_swarm',
+      default: 'docker',
     },
     cluster: {
       name: String,
