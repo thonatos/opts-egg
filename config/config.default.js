@@ -43,7 +43,7 @@ module.exports = appInfo => {
 
   config.auth = {
     enable: true,
-    match: '/hook/docker',
+    match: '/webhook/registry',
   };
 
   // Security
@@ -79,7 +79,7 @@ module.exports = appInfo => {
 
   // Database
   config.mongoose = {
-    url: process.env.EGG_MONGOOSE_URL || 'mongodb://localhost:27017/devops',
+    url: process.env.EGG_MONGOOSE_URL || 'mongodb://maidops:maidops@localhost:27017/maidops',
     options: {},
     agent: true,
   };
